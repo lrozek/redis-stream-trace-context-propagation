@@ -1,4 +1,4 @@
-# redis-stream-trace-context-propagation
+# sample project for https://github.com/spring-cloud/spring-cloud-sleuth/issues/2117
 
 ### to build and run the application
 
@@ -28,8 +28,8 @@ docker-compose exec redis redis-cli XREAD STREAMS mystream ID 0 $
 2022-02-17 10:46:24.523  INFO [producer,7a1c6b3aa94d7cb5,7a1c6b3aa94d7cb5] 1 --- [nio-8080-exec-3] p.l.r.s.t.p.controller.RedisController   : following stream entry added: MapBackedRecord{recordId=*, kvMap={name=John}}
 ```
 
-- when stream entry was add to a stream via call `redisTemplate#opsForStream()#add(record)` there is missing egress instrumentation to propagate trace context.
-  This can be checked by reading all stream entries via `redic-cli`. In below output only one key-value pair is present, ie `name` -> `John`
+- when the stream entry was added to a stream via call `redisTemplate#opsForStream()#add(record)` there is a missing egress instrumentation to propagate trace context.
+  This can be checked by reading all stream entries via `redic-cli`. In the below output only one key-value pair is present, ie `name` -> `John`
 
 ```shell
 docker-compose exec redis redis-cli XREAD STREAMS mystream ID 0 $
@@ -50,7 +50,7 @@ docker-compose exec redis redis-cli XREAD STREAMS mystream ID 0 $
 
 ### Producer
 
-- there should be egress instrumentation to propagate trace context built in `RedisTemplate`
+- there should be an egress instrumentation to propagate trace context built in `RedisTemplate`
 - since `redis streams` do not have any notion of headers the only way to achive it is via adding another key-value pair alongside data. The idea is something like that:
 
 ```shell
